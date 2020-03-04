@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-
+from screeninfo import get_monitors
 DELTA = 10
 
 cap = cv2.VideoCapture(0)
@@ -12,6 +12,10 @@ dh = 0
 
 cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
 cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+display_width = get_monitors()[0].width
+display_height = get_monitors()[0].height
+ratio = display_width / display_height
 
 
 def decrease(inval, min, delta=DELTA):
@@ -36,8 +40,8 @@ while(True):
     height, width, channels = frame.shape
 
     # Our operations on the frame come here
-    h = height + dh
     w = width + dw
+    h = height + dh
 
     cropped = frame[dy:dy + h, dx:dx + w]
 
@@ -49,13 +53,13 @@ while(True):
         break
     if key & 0xFF == ord('+'):
         dw = decrease(dw, - width + 2 * DELTA, 2 * DELTA)
-        dh = decrease(dh, - height + 2 * DELTA, 2 * DELTA)
         dx = increase(dx, -dw)
+        dh = decrease(dh, - height + 2 * DELTA, 2 * DELTA)
         dy = increase(dy, -dh)
     elif key & 0xFF == ord('-'):
         dw = increase(dw, 0, 2 * DELTA)
-        dh = increase(dh, 0, 2 * DELTA)
         dx = decrease(dx, 0)
+        dh = increase(dh, 0, 2 * DELTA)
         dy = decrease(dy, 0)
     elif key == 65362:  # cursor up
         dy = decrease(dy, 0)

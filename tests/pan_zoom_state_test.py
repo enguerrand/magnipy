@@ -49,8 +49,8 @@ class PanZoomStateTest(unittest.TestCase):
         pzs = PanZoomState(640, 480, 10, 1280, 960)
         pzs.zoom(1)
         pzs.pan(40, 20)
-        self.assertEqual(340, pzs.pos_x, "wrong x")
-        self.assertEqual(250, pzs.pos_y, "wrong y")
+        self.assertEqual(360, pzs.pos_x, "wrong x")
+        self.assertEqual(260, pzs.pos_y, "wrong y")
 
     def test_pan_beyond_right_limit(self):
         pzs = PanZoomState(640, 480, 10, 1280, 960)

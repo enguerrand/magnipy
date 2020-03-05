@@ -50,8 +50,8 @@ class PanZoomState(CommonEqualityMixin):
         self.ensure_full_overlap()
 
     def pan(self, delta_x=0, delta_y=0):
-        self.pos_x = self.pos_x + int(delta_x/self.zoom_level)
-        self.pos_y = self.pos_y + int(delta_y/self.zoom_level)
+        self.pos_x = self.pos_x + delta_x
+        self.pos_y = self.pos_y + delta_y
         self.ensure_full_overlap()
 
     def compute_bounds(self) -> Bounds:

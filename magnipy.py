@@ -29,9 +29,13 @@ while(True):
 
     cropped = frame[bounds.dy:bounds.dy + bounds.height, bounds.dx:bounds.dx + bounds.width]
 
-    # Display the resulting frame
-    cv2.imshow("window", cropped)
+    with_borders = cv2.copyMakeBorder(
+        cropped, bounds.v_margin, bounds.v_margin, bounds.h_margin, bounds.h_margin, cv2.BORDER_CONSTANT, None, [0, 0, 0]
+    )
 
+    # Display the resulting frame
+    cv2.imshow("window", with_borders)
+    cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     key = cv2.waitKeyEx(1)
     if key & 0xFF == ord('q'):
         break

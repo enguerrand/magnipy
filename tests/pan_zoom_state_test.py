@@ -14,6 +14,21 @@ class PanZoomStateTest(unittest.TestCase):
         self.assertEqual(320, pzs.pos_x, "wrong x")
         self.assertEqual(240, pzs.pos_y, "wrong y")
 
+    def test_perfect_aspect(self):
+        pzs = PanZoomState(640, 480, 10, 640, 480)
+        self.assertEqual(0, pzs.excessive_width, "wrong excessive width")
+        self.assertEqual(0, pzs.excessive_height, "wrong excessive width")
+
+    def test_excessive_height(self):
+        pzs = PanZoomState(640, 500, 10, 640, 480)
+        self.assertEqual(0, pzs.excessive_width, "wrong excessive width")
+        self.assertEqual(20, pzs.excessive_height, "wrong excessive width")
+
+    def test_excessive_width(self):
+        pzs = PanZoomState(660, 480, 10, 640, 480)
+        self.assertEqual(20, pzs.excessive_width, "wrong excessive width")
+        self.assertEqual(0, pzs.excessive_height, "wrong excessive width")
+
     def test_min_zoom(self):
         pzs = PanZoomState(640, 480, 10, 1920, 1080)
         pzs.zoom(-1.1)
@@ -64,6 +79,44 @@ class PanZoomStateTest(unittest.TestCase):
         pzs.pan(0, -250)
         self.assertEqual(320, pzs.pos_x, "wrong x")
         self.assertEqual(120, pzs.pos_y, "wrong y")
+
+    def test_use_full_camera_bounds_x(self):
+        pzs = PanZoomState(640, 480, 10, 1280, 480)
+        bounds = pzs.compute_bounds()
+        self.assertEqual(1, pzs.zoom_level, "wrong zoom level")
+        self.assertEqual(0, bounds.dx, "wrong dx")
+        self.assertEqual(0, bounds.dy, "wrong dy")
+        self.assertEqual(640, bounds.width, "wrong width")
+        self.assertEqual(480, bounds.height, "wrong height")
+
+    def test_use_full_camera_bounds_y(self):
+        pzs = PanZoomState(640, 480, 10, 640, 960)
+        bounds = pzs.compute_bounds()
+        self.assertEqual(1, pzs.zoom_level, "wrong zoom level")
+        self.assertEqual(0, bounds.dx, "wrong dx")
+        self.assertEqual(0, bounds.dy, "wrong dy")
+        self.assertEqual(640, bounds.width, "wrong width")
+        self.assertEqual(480, bounds.height, "wrong height")
+
+    def test_no_unused_display_real_estate_x(self):
+        pzs = PanZoomState(640, 480, 10, 1280, 480)
+        pzs.zoom(1)
+        bounds = pzs.compute_bounds()
+        self.assertEqual(2, pzs.zoom_level, "wrong zoom level")
+        self.assertEqual(0, bounds.dx, "wrong dx")
+        self.assertEqual(120, bounds.dy, "wrong dy")
+        self.assertEqual(640, bounds.width, "wrong width")
+        self.assertEqual(240, bounds.height, "wrong height")
+
+    def test_no_unused_display_real_estate_y(self):
+        pzs = PanZoomState(640, 480, 10, 640, 960)
+        pzs.zoom(1)
+        bounds = pzs.compute_bounds()
+        self.assertEqual(2, pzs.zoom_level, "wrong zoom level")
+        self.assertEqual(160, bounds.dx, "wrong dx")
+        self.assertEqual(0, bounds.dy, "wrong dy")
+        self.assertEqual(320, bounds.width, "wrong width")
+        self.assertEqual(480, bounds.height, "wrong height")
 
 
 if __name__ == '__main__':

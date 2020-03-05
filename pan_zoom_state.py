@@ -28,6 +28,12 @@ class PanZoomState(CommonEqualityMixin):
         self.zoom_level = self.min_zoom_level
         self.pos_x = int(width / 2)
         self.pos_y = int(height / 2)
+        self.excessive_width = 0
+        self.excessive_height = 0
+        if width / height > self.aspect_ratio:
+            self.excessive_width = int(width - self.aspect_ratio * height)
+        elif width / height < self.aspect_ratio:
+            self.excessive_height = int(height - width / self.aspect_ratio)
 
     def zoom(self, delta):
         self.zoom_level = self.zoom_level + delta
@@ -47,9 +53,18 @@ class PanZoomState(CommonEqualityMixin):
         height = self.orig_height / self.zoom_level
         zoomed_aspect_ratio = width / height
         if zoomed_aspect_ratio > self.aspect_ratio:
-            width = int(width * zoomed_aspect_ratio / self.aspect_ratio)
+            removed_width = self.orig_width - width
+            if removed_width < self.excessive_width:
+                height = self.orig_height
+            else:
+                height = self.orig_height - (removed_width - self.excessive_width) / self.aspect_ratio
         elif zoomed_aspect_ratio < self.aspect_ratio:
-            height = int(height * zoomed_aspect_ratio / self.aspect_ratio)
+            removed_height = self.orig_height - height
+            if removed_height < self.excessive_height:
+                width = self.orig_width
+            else:
+                width = self.orig_width - (removed_height - self.excessive_height) * self.aspect_ratio
+
         dx = self.pos_x - int(width / 2)
         dy = self.pos_y - int(height / 2)
         return Bounds(dx, dy, int(width), int(height))

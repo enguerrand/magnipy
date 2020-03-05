@@ -37,6 +37,10 @@ class PanZoomState(CommonEqualityMixin):
         elif width / height < self.aspect_ratio:
             self.excessive_height = int(height - width / self.aspect_ratio)
 
+    def scale_zoom(self, scale_factor):
+        delta = self.zoom_level * scale_factor - self.zoom_level
+        self.zoom(delta)
+
     def zoom(self, delta):
         self.zoom_level = self.zoom_level + delta
         if self.zoom_level > self.max_zoom_level:

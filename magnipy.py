@@ -40,9 +40,9 @@ while(True):
     if key & 0xFF == ord('q'):
         break
     if key & 0xFF == ord('+'):
-        pan_zoom_state.zoom(0.1)
+        pan_zoom_state.scale_zoom(1.1)
     elif key & 0xFF == ord('-'):
-        pan_zoom_state.zoom(-0.1)
+        pan_zoom_state.scale_zoom(1 / 1.1)
     elif key == 65362:  # cursor up
         pan_zoom_state.pan(0, -DELTA)
     elif key == 65363:  # cursor right

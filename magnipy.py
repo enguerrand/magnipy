@@ -13,11 +13,13 @@ cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 display_width = get_monitors()[0].width
 display_height = get_monitors()[0].height
+inverted = False
 ratio = display_width / display_height
 
 ret, frame = cap.read()
 height, width, channels = frame.shape
 pan_zoom_state = PanZoomState(width, height, 10, display_width, display_height)
+
 
 while(True):
     # Capture frame-by-frame
@@ -29,6 +31,9 @@ while(True):
 
     cropped = frame[bounds.dy:bounds.dy + bounds.height, bounds.dx:bounds.dx + bounds.width]
 
+    if inverted:
+        cropped = cv2.bitwise_not(cropped)
+
     with_borders = cv2.copyMakeBorder(
         cropped, bounds.v_margin, bounds.v_margin, bounds.h_margin, bounds.h_margin, cv2.BORDER_CONSTANT, None, [0, 0, 0]
     )
@@ -39,6 +44,8 @@ while(True):
     key = cv2.waitKeyEx(1)
     if key & 0xFF == ord('q'):
         break
+    if key & 0xFF == ord('i'):
+        inverted = not inverted
     if key & 0xFF == ord('+'):
         pan_zoom_state.scale_zoom(1.1)
     elif key & 0xFF == ord('-'):

@@ -2,13 +2,13 @@
 set -e
 if [ $(id -u) -eq 0 ]; then
        echo "Do not run as root"
-       exit -1
+       exit 255
 fi       
-cd $(dirname "$0") 
+cd "$(dirname "$0")"/..
 install_dir=$(pwd)
 systemd_user_dir=${HOME}/.config/systemd/user
-mkdir -p ${systemd_user_dir}
-sed -e "s#/path/to/install/dir/magnipy/#${install_dir}/#g" ./systemd/magnipy@.service  > ${systemd_user_dir}/magnipy@.service
+mkdir -p "${systemd_user_dir}"
+sed -e "s#/path/to/install/dir/magnipy/#${install_dir}/#g" ./systemd/magnipy@.service  > "${systemd_user_dir}"/magnipy@.service
 systemctl --user daemon-reload
 
 cat << EOF

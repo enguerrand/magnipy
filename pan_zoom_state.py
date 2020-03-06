@@ -1,6 +1,3 @@
-from common_equality_mixin import CommonEqualityMixin
-
-
 class Bounds:
     def __init__(self, dx: int, dy: int, width: int, height: int, h_margin: int, v_margin: int):
         self.dx = dx
@@ -11,7 +8,7 @@ class Bounds:
         self.v_margin = v_margin
 
 
-class PanZoomState(CommonEqualityMixin):
+class PanZoomState():
     def __init__(
             self,
             width: int,
@@ -90,3 +87,10 @@ class PanZoomState(CommonEqualityMixin):
             self.pos_x = self.orig_width - int(bounds.width / 2)
         if bounds.dy + bounds.height > self.orig_height:
             self.pos_y = self.orig_height - int(bounds.height / 2)
+
+    def __eq__(self, other):
+        return (isinstance(other, self.__class__)
+                and self.__dict__ == other.__dict__)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)

@@ -44,7 +44,7 @@ pip install -r requirements.txt
 # Systemd is required to do this.
 #
 # Install magnipy as a systemd user service
-~/git/magnipy/install.sh
+~/git/magnipy/systemd/install.sh
 # This script's output will provide further instructions
 ```
 ## Keyboard shortcuts

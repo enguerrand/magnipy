@@ -1,4 +1,3 @@
-import numpy as np
 import cv2
 import sys
 from screeninfo import get_monitors
@@ -30,13 +29,10 @@ try:
     height, width, channels = frame.shape
     pan_zoom_state = PanZoomState(width, height, 10, display_width, display_height)
 
-
-    while(True):
-        # Capture frame-by-frame
+    while True:
         ret, frame = cap.read()
         height, width, channels = frame.shape
 
-        # Our operations on the frame come here
         bounds = pan_zoom_state.compute_bounds()
 
         cropped = frame[bounds.dy:bounds.dy + bounds.height, bounds.dx:bounds.dx + bounds.width]
@@ -45,10 +41,16 @@ try:
             cropped = cv2.bitwise_not(cropped)
 
         with_borders = cv2.copyMakeBorder(
-            cropped, bounds.v_margin, bounds.v_margin, bounds.h_margin, bounds.h_margin, cv2.BORDER_CONSTANT, None, [0, 0, 0]
+            cropped,
+            bounds.v_margin,
+            bounds.v_margin,
+            bounds.h_margin,
+            bounds.h_margin,
+            cv2.BORDER_CONSTANT,
+            None,
+            [0, 0, 0]
         )
 
-        # Display the resulting frame
         cv2.imshow("window", with_borders)
         cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         key = cv2.waitKeyEx(1)
@@ -70,6 +72,5 @@ try:
             pan_zoom_state.pan(-DELTA, 0)
 
 finally:
-    # When everything done, release the capture
     cap.release()
     cv2.destroyAllWindows()

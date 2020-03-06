@@ -51,7 +51,7 @@ pip install -r requirements.txt
 ```
 ## Keyboard shortcuts
 - Panning: Arrow Keys
-- Zoom in: +
-- Zoom out: -
-- Invert colors: i
-- Quit: q
+- Zoom in: + or Enter
+- Zoom out: - or Backspace
+- Invert colors: i or Space
+- Quit: Escape

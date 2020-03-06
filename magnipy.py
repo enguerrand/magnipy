@@ -4,6 +4,16 @@ from screeninfo import get_monitors
 
 from pan_zoom_state import PanZoomState
 
+
+KEY_CODE_BACKSPACE = 8
+KEY_CODE_ENTER = 13
+KEY_CODE_ESCAPE = 27
+KEY_CODE_SPACE = 32
+KEY_CODE_ARROW_LEFT = 65361
+KEY_CODE_ARROW_UP = 65362
+KEY_CODE_ARROW_RIGHT = 65363
+KEY_CODE_ARROW_DOWN = 65364
+
 video_device = "/dev/video0"
 if len(sys.argv) > 1:
     video_device = "/dev/" + sys.argv[1]
@@ -54,22 +64,24 @@ try:
         cv2.imshow("window", with_borders)
         cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         key = cv2.waitKeyEx(1)
-        if key & 0xFF == ord('q'):
+        if key & 0xFF == KEY_CODE_ESCAPE:
             break
-        if key & 0xFF == ord('i'):
+        elif key & 0xFF == ord('i') or key & 0xFF == KEY_CODE_SPACE:
             inverted = not inverted
-        if key & 0xFF == ord('+'):
+        elif key & 0xFF == ord('+') or key & 0xFF == KEY_CODE_ENTER:
             pan_zoom_state.scale_zoom(1.1)
-        elif key & 0xFF == ord('-'):
+        elif key & 0xFF == ord('-') or key & 0xFF == KEY_CODE_BACKSPACE:
             pan_zoom_state.scale_zoom(1 / 1.1)
-        elif key == 65362:  # cursor up
+        elif key == KEY_CODE_ARROW_UP:  # cursor up
             pan_zoom_state.pan(0, -DELTA)
-        elif key == 65363:  # cursor right
+        elif key == KEY_CODE_ARROW_RIGHT:
             pan_zoom_state.pan(DELTA, 0)
-        elif key == 65364:  # cursor down
+        elif key == KEY_CODE_ARROW_DOWN:
             pan_zoom_state.pan(0, DELTA)
-        elif key == 65361:  # cursor right
+        elif key == KEY_CODE_ARROW_LEFT:
             pan_zoom_state.pan(-DELTA, 0)
+        elif key != -1:
+            print(key)
 
 finally:
     cap.release()

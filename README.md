@@ -9,6 +9,8 @@ The usb camera should be positioned such that a book, newspaper or similar docum
 The camera image is displayed in full screen and can be panned / zoomed using the keyboard.
 
 ## Installation
+The installation instructions below are applicable for GNU/Linux. Necessary steps on other operating systems may vary.
+
 You need python3 and python3-venv to install magnipy.
 Follow these steps to install magnipy:
 

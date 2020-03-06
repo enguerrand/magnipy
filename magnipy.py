@@ -1,12 +1,23 @@
 import numpy as np
 import cv2
+import sys
 from screeninfo import get_monitors
 
 from pan_zoom_state import PanZoomState
 
+video_device = "/dev/video0"
+if len(sys.argv) > 1:
+    video_device = "/dev/" + sys.argv[1]
+
 DELTA = 10
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(video_device)
+
+ret, frame = cap.read()
+if frame is None:
+    print("Failed to capture from device " + video_device + " => Aborting execution")
+    sys.exit(-1)
+
 
 cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
 cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
@@ -16,7 +27,6 @@ display_height = get_monitors()[0].height
 inverted = False
 ratio = display_width / display_height
 
-ret, frame = cap.read()
 height, width, channels = frame.shape
 pan_zoom_state = PanZoomState(width, height, 10, display_width, display_height)
 

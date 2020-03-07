@@ -4,6 +4,7 @@ from screeninfo import get_monitors
 
 from pan_zoom_state import PanZoomState
 
+FOCUS_STEP = 5
 
 KEY_CODE_BACKSPACE = 8
 KEY_CODE_ENTER = 13
@@ -18,9 +19,17 @@ video_device = "/dev/video0"
 if len(sys.argv) > 1:
     video_device = "/dev/" + sys.argv[1]
 
-DELTA = 10
+DELTA = 40
+FOCUS_STEP = 5  # TODO: is this device dependent?
 
 cap = cv2.VideoCapture(video_device)
+
+cap.set(cv2.CAP_PROP_FPS, 30)  # TODO: make configurable
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)  # TODO: make configurable
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)  # TODO: make configurable
+cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+cap.set(cv2.CAP_PROP_FOCUS, 35)
+
 
 try:
     ret, frame = cap.read()
@@ -72,7 +81,19 @@ try:
             pan_zoom_state.scale_zoom(1.1)
         elif key & 0xFF == ord('-') or key & 0xFF == KEY_CODE_BACKSPACE:
             pan_zoom_state.scale_zoom(1 / 1.1)
-        elif key == KEY_CODE_ARROW_UP:  # cursor up
+        elif key & 0xFF == ord('f'):
+            cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)
+        elif key & 0xFF == ord('q'):
+            if cap.get(cv2.CAP_PROP_AUTOFOCUS) == 1:
+                cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+            current = cap.get(cv2.CAP_PROP_FOCUS)
+            cap.set(cv2.CAP_PROP_FOCUS, max(0, current - FOCUS_STEP))
+        elif key & 0xFF == ord('w'):
+            if cap.get(cv2.CAP_PROP_AUTOFOCUS) == 1:
+                cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+            current = cap.get(cv2.CAP_PROP_FOCUS)
+            cap.set(cv2.CAP_PROP_FOCUS, min(250, current + FOCUS_STEP))
+        elif key == KEY_CODE_ARROW_UP:
             pan_zoom_state.pan(0, -DELTA)
         elif key == KEY_CODE_ARROW_RIGHT:
             pan_zoom_state.pan(DELTA, 0)

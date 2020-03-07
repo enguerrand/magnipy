@@ -55,3 +55,6 @@ pip install -r requirements.txt
 - Zoom out: - or Backspace
 - Invert colors: i or Space
 - Quit: Escape
+- Autofocus: f
+- Reduce focus: q (implicitly disables autofocus)
+- Increase focus: w (implicitly disables autofocus)

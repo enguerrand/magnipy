@@ -1,7 +1,10 @@
+from threading import Thread
+
 import cv2
 import sys
 from screeninfo import get_monitors
 
+from touch_input_handler import TouchInputHandler
 from pan_zoom_state import PanZoomState
 
 FOCUS_STEP = 5
@@ -30,6 +33,7 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)  # TODO: make configurable
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FOCUS, 35)
 
+touch_input_handler = None
 
 try:
     ret, frame = cap.read()
@@ -37,7 +41,7 @@ try:
         print("Failed to capture from device " + video_device + " => Aborting execution")
         sys.exit(-1)
 
-    cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
+    cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN | cv2.WINDOW_GUI_NORMAL)
     cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     display_width = get_monitors()[0].width
@@ -47,6 +51,9 @@ try:
 
     height, width, channels = frame.shape
     pan_zoom_state = PanZoomState(width, height, 10, display_width, display_height)
+
+    touch_input_handler = TouchInputHandler(pan_zoom_state)
+    Thread(target=touch_input_handler.listen, args=()).start()
 
     while True:
         ret, frame = cap.read()
@@ -103,7 +110,8 @@ try:
             pan_zoom_state.pan(-DELTA, 0)
         elif key != -1:
             print(key)
-
 finally:
     cap.release()
     cv2.destroyAllWindows()
+    touch_input_handler.stop()
+

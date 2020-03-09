@@ -51,6 +51,14 @@ class PanZoomState():
         self.pos_y = self.pos_y + delta_y
         self.ensure_full_overlap()
 
+    def pan_relative(self, delta_x=0.0, delta_y=0.0):
+        if self.zoom_level < 1.0:
+            return
+        else:
+            delta_x_abs = delta_x * (self.orig_width - self.orig_width / self.zoom_level)
+            delta_y_abs = delta_y * (self.orig_height - self.orig_height / self.zoom_level)
+        self.pan(int(delta_x_abs), int(delta_y_abs))
+
     def compute_bounds(self) -> Bounds:
         width = self.orig_width / self.zoom_level
         height = self.orig_height / self.zoom_level

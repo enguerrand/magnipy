@@ -1,16 +1,8 @@
-import json
-import re
 import selectors
-from json import JSONDecodeError
-
 import evdev
 from threading import Thread
-from selectors import DefaultSelector, EVENT_READ
-
 from evdev import ecodes
-
 from pan_zoom_state import PanZoomState
-
 
 
 class TouchInputHandler:
@@ -27,9 +19,9 @@ class TouchInputHandler:
         devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
         device_info = dict()
         for device in devices:
-            if is_mouse(device):
+            capabilities = device.capabilities(verbose=False)
+            if is_touch_device(capabilities):
                 print(device.path, device.name, device.phys)
-                capabilities = device.capabilities(verbose=False)
                 abs_info_abs_x = extract_absinfo(capabilities, ecodes.ABS_X)
                 abs_info_abs_y = extract_absinfo(capabilities, ecodes.ABS_Y)
                 if abs_info_abs_x is None or abs_info_abs_y is None:
@@ -43,7 +35,7 @@ class TouchInputHandler:
         while not self.stop_requested:
             for key, mask in selector.select(1):
                 device = key.fileobj
-                (abs_info_x, abs_info_abs_y) = device_info[device.path]
+                (abs_info_abs_x, abs_info_abs_y) = device_info[device.path]
                 x_size = abs_info_abs_x.max - abs_info_abs_x.min
                 y_size = abs_info_abs_y.max - abs_info_abs_y.min
                 for event in device.read():
@@ -72,17 +64,22 @@ class TouchInputHandler:
         self.stop_requested = True
 
 
+def is_touch_device(capabilities):
+    for prop in (ecodes.ABS_X, ecodes.ABS_Y, ecodes.ABS_MT_TRACKING_ID):
+        if extract_absinfo(capabilities, prop) is None:
+            return False
+    return True
+
+
 def extract_absinfo(capabilities, type):
-    abs_info_entries = capabilities[ecodes.EV_ABS]
-    for abs_info_entry in abs_info_entries:
-        if abs_info_entry[0] == type:
-            return abs_info_entry[1]
-    return None
-
-
-def is_mouse(device):
-    # return re.match('.*(mouse|touchpad).*', device.name.lower())
-    return re.match('.*(touchpad).*', device.name.lower())
+    try:
+        abs_info_entries = capabilities[ecodes.EV_ABS]
+        for abs_info_entry in abs_info_entries:
+            if abs_info_entry[0] == type:
+                return abs_info_entry[1]
+        return None
+    except KeyError:
+        return None
 
 
 if __name__ == '__main__':

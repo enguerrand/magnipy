@@ -7,8 +7,6 @@ from screeninfo import get_monitors
 from touch_input_handler import TouchInputHandler
 from pan_zoom_state import PanZoomState
 
-FOCUS_STEP = 5
-
 KEY_CODE_BACKSPACE = 8
 KEY_CODE_ENTER = 13
 KEY_CODE_ESCAPE = 27
@@ -17,13 +15,12 @@ KEY_CODE_ARROW_LEFT = 65361
 KEY_CODE_ARROW_UP = 65362
 KEY_CODE_ARROW_RIGHT = 65363
 KEY_CODE_ARROW_DOWN = 65364
+DELTA = 40
+FOCUS_STEP = 5  # TODO: is this device dependent?
 
 video_device = "/dev/video0"
 if len(sys.argv) > 1:
     video_device = "/dev/" + sys.argv[1]
-
-DELTA = 40
-FOCUS_STEP = 5  # TODO: is this device dependent?
 
 cap = cv2.VideoCapture(video_device)
 
@@ -34,7 +31,6 @@ cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FOCUS, 35)
 
 touch_input_handler = None
-
 try:
     ret, frame = cap.read()
     if frame is None:

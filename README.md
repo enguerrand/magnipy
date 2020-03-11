@@ -59,6 +59,20 @@ sudo usermod -a -G input $USER
 ~/git/magnipy/systemd/install.sh
 ## This script's output will provide further instructions
 ```
+## Configuration
+Certain aspects of the application are configurable.
+
+In order to change the defaults, copy the file config.json from this git repository to $HOME/.magnipy/ (create the
+directory if needed or let magnipy create it by running it at least once.)
+
+Then change the content as needed. The parameter names in the json file are reasonably self explanatory. You may have
+to check your camera to identify appropriate values.
+
+After running magnipy at least once, a file named runtime.json will also be created in $HOME/magnipy.
+
+This file stores settings such as the zoom level or focus modified by the user at runtime. It is used at the next
+startup to restore the previous settings. You can safely delete it if you want to reset these settings to the defaults.
+
 ## Keyboard shortcuts
 - Panning: Arrow Keys or Touch Input
 - Zoom in: + or Enter

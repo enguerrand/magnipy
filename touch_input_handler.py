@@ -31,7 +31,7 @@ class TouchInputHandler:
                     device_info[device.path] = (abs_info_abs_x, abs_info_abs_y)
                     selector.register(device, selectors.EVENT_READ)
                     self.grabbed_devices.append(device)
-                    # device.grab()
+                    device.grab()
 
             while not self.stop_requested:
                 for ready in selector.select(1):

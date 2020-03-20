@@ -6,7 +6,7 @@ Description=Magnipy for camera %i
 Type=simple
 Restart=always
 RestartSec=10
-ExecStart=/path/to/install/dir/magnipy/run.sh %i
+ExecStart=sg input "/path/to/install/dir/magnipy/run.sh %i"
 
 [Install]
 WantedBy=default.target

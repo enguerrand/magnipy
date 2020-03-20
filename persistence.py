@@ -8,7 +8,7 @@ RUNTIME_SETTINGS_FILE = os.path.join(CONFIG_DIR, "runtime.json")
 
 
 class Config:
-    def __init__(self, camera_focus_step=5, camera_fps=10, camera_res_width=3264, camera_res_height=2448):
+    def __init__(self, camera_focus_step=1, camera_fps=10, camera_res_width=3264, camera_res_height=2448):
         self.camera_focus_step = camera_focus_step
         self.camera_fps = camera_fps
         self.camera_res_width = camera_res_width

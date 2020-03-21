@@ -5,13 +5,20 @@ from evdev import ecodes
 from pan_zoom_state import PanZoomState
 
 
+class DeviceState:
+    def __init__(self, device, multitouch):
+        self.device = device
+        self.multitouch = multitouch
+        self.fingers_down = 0
+        self.abs_pressure = 0
+        self.drag_start_x = None
+        self.drag_start_y = None
+
+
 class TouchInputHandler:
     def __init__(self, pan_zoom_state):
         self.pan_zoom_state = pan_zoom_state
-        self.fingers_down = 0
-        self.drag_start_x = None
-        self.drag_start_y = None
-        self.grabbed_devices = []
+        self.grabbed_devices = dict()
         self.stop_requested = False
 
     def listen(self):
@@ -21,7 +28,8 @@ class TouchInputHandler:
             device_info = dict()
             for device in devices:
                 capabilities = device.capabilities(verbose=False)
-                if is_touch_device(capabilities):
+                mt = is_mt_touch_device(capabilities)
+                if mt or is_touch_device(capabilities):
                     print(device.path, device.name, device.phys)
                     abs_info_abs_x = extract_absinfo(capabilities, ecodes.ABS_X)
                     abs_info_abs_y = extract_absinfo(capabilities, ecodes.ABS_Y)
@@ -30,7 +38,7 @@ class TouchInputHandler:
                         continue
                     device_info[device.path] = (abs_info_abs_x, abs_info_abs_y)
                     selector.register(device, selectors.EVENT_READ)
-                    self.grabbed_devices.append(device)
+                    self.grabbed_devices[device.path] = DeviceState(device, mt)
                     device.grab()
 
             while not self.stop_requested:
@@ -45,32 +53,44 @@ class TouchInputHandler:
                     for event in device.read():
                         if event.type == ecodes.EV_ABS:
                             if event.code == ecodes.ABS_X:
-                                if self.drag_start_x is not None:
-                                    self.pan_zoom_state.pan_relative(delta_x=(event.value - self.drag_start_x) / x_size)
-                                self.drag_start_x = event.value
+                                if self.grabbed_devices[device.path].drag_start_x is not None:
+                                    self.pan_zoom_state.pan_relative(delta_x=(event.value - self.grabbed_devices[device.path].drag_start_x) / x_size)
+                                self.grabbed_devices[device.path].drag_start_x = event.value
                             if event.code == ecodes.ABS_Y:
-                                if self.drag_start_y is not None:
-                                    self.pan_zoom_state.pan_relative(delta_y=(event.value - self.drag_start_y) / y_size)
-                                self.drag_start_y = event.value
+                                if self.grabbed_devices[device.path].drag_start_y is not None:
+                                    self.pan_zoom_state.pan_relative(delta_y=(event.value - self.grabbed_devices[device.path].drag_start_y) / y_size)
+                                self.grabbed_devices[device.path].drag_start_y = event.value
                             if event.code == ecodes.ABS_MT_TRACKING_ID:
                                 if event.value == -1:
-                                    self.fingers_down = max(0, self.fingers_down - 1)
+                                    self.grabbed_devices[device.path].fingers_down = max(0, self.grabbed_devices[device.path].fingers_down - 1)
                                 else:
-                                    self.fingers_down = self.fingers_down + 1
-                                print("fingers down: " + str(self.fingers_down))
-                                if self.fingers_down == 0:
-                                    self.drag_start_x = None
-                                    self.drag_start_y = None
-
+                                    self.grabbed_devices[device.path].fingers_down = self.grabbed_devices[device.path].fingers_down + 1
+                                if self.grabbed_devices[device.path].fingers_down == 0:
+                                    self.grabbed_devices[device.path].drag_start_x = None
+                                    self.grabbed_devices[device.path].drag_start_y = None
+                            if event.code == ecodes.ABS_PRESSURE:
+                                pressure = event.value
+                                self.grabbed_devices[device.path].abs_pressure = pressure
+                                if not self.grabbed_devices[device.path].multitouch:
+                                    if pressure <= 0:
+                                        self.grabbed_devices[device.path].drag_start_x = None
+                                        self.grabbed_devices[device.path].drag_start_y = None
         finally:
-            for dev in self.grabbed_devices:
-                dev.ungrab()
+            for device_state in self.grabbed_devices.values():
+                device_state.device.ungrab()
 
     def stop(self):
         self.stop_requested = True
 
 
 def is_touch_device(capabilities):
+    for prop in (ecodes.ABS_X, ecodes.ABS_Y, ecodes.ABS_PRESSURE):
+        if extract_absinfo(capabilities, prop) is None:
+            return False
+    return True
+
+
+def is_mt_touch_device(capabilities):
     for prop in (ecodes.ABS_X, ecodes.ABS_Y, ecodes.ABS_MT_TRACKING_ID):
         if extract_absinfo(capabilities, prop) is None:
             return False

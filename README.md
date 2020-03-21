@@ -17,12 +17,13 @@ Especially taking over touch input devices will only work on linux and the user 
 (Group name may vary based on distro).
 
 You need python3, python3-dev and python3-venv to install magnipy.
+For the grabbing of touch devices you also need gcc and the linux headers.
 Follow these steps to install magnipy:
 
 ```
-## If not already present install python3 python3-dev and python3-venv
+## If not already present install python3 python3-dev, python3-venv, gcc and linux headers
 ## E.g. in Debian-based systems install it with:
-# sudo apt install python3 python3-dev python3-venv
+# sudo apt install python3 python3-dev python3-venv gcc, linux-headers-$(uname -r)
 ## 
 ## Navigate to a directory of your choice where you have write permissions. E.g:
 mkdir -p ~/git

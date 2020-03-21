@@ -54,11 +54,11 @@ class TouchInputHandler:
                         if event.type == ecodes.EV_ABS:
                             if event.code == ecodes.ABS_X:
                                 if self.grabbed_devices[device.path].drag_start_x is not None:
-                                    self.pan_zoom_state.pan_relative(delta_x=(event.value - self.grabbed_devices[device.path].drag_start_x) / x_size)
+                                    self.pan_zoom_state.pan_relative(delta_x=(self.grabbed_devices[device.path].drag_start_x - event.value) / x_size)
                                 self.grabbed_devices[device.path].drag_start_x = event.value
                             if event.code == ecodes.ABS_Y:
                                 if self.grabbed_devices[device.path].drag_start_y is not None:
-                                    self.pan_zoom_state.pan_relative(delta_y=(event.value - self.grabbed_devices[device.path].drag_start_y) / y_size)
+                                    self.pan_zoom_state.pan_relative(delta_y=(self.grabbed_devices[device.path].drag_start_y - event.value) / y_size)
                                 self.grabbed_devices[device.path].drag_start_y = event.value
                             if event.code == ecodes.ABS_MT_TRACKING_ID:
                                 if event.value == -1:

@@ -39,26 +39,49 @@ pip install -U pip
 ## Install magnipy's python dependencies
 pip install -r requirements.txt
 
-## You can now run magnipy with the following command 
-## (assuming that you installed it to the directory suggested above):
-#~/git/magnipy/run.sh
-
-## This will use the first camera connected to your computer (i.e. /dev/video0)
-## If you wish to use a different camera (e.g. /dev/video2) provide its device 
-## name as a command line argument:
-#~/git/magnipy/run.sh video2
-
 ## Add user to the input group (name of this group may vary based on distro)
 ## You may have to log out and log back in for this change to become active 
 sudo usermod -a -G input $USER
 
-## The following step is optional but useful if you would like magnipy to 
-## run automatically when a certain device is connected. 
-## Systemd is required to do this.
-##
+## You can now run magnipy with the following command 
+## (assuming that you installed it to the directory suggested above):
+~/git/magnipy/run.sh
+
+## This will use the first camera connected to your computer (i.e. /dev/video0)
+## If you wish to use a different camera (e.g. /dev/video2) provide its device name as a command line argument:
+~/git/magnipy/run.sh video2
+
+## However, device names in /dev are not predictable. 
+## To detect the correct camera in a more reliable way you can use its id as listed by the symlinks in 
+## /dev/v4l/by-id/.
+## E.g. on my laptop, these devices look like this:
+~$ ls -l /dev/v4l/by-id/
+total 0
+lrwxrwxrwx 1 root root 12 Mar 22 17:27 usb-Chicony_Electronics_Co._Ltd._HD_WebCam-video-index0 -> ../../video0
+lrwxrwxrwx 1 root root 12 Mar 22 17:27 usb-Chicony_Electronics_Co._Ltd._HD_WebCam-video-index1 -> ../../video1
+
+## The name of one of these symlinks can be provided as command line argument to magnipy in the same way as the 
+## kernel device names (replace the name parameter below by the id as shown in the output of the above command on
+## your own computer):
+~/git/magnipy/run.sh usb-Chicony_Electronics_Co._Ltd._HD_WebCam-video-index0
+```
+
+## Running magnipy as a systemd user service
+This step is optional but useful if you would like magnipy to run automatically when a certain device is connected. 
+Systemd is required to do this.
+```bash
 ## Install magnipy as a systemd user service
 ~/git/magnipy/systemd/install.sh
-## This script's output will provide further instructions
+## Once the user service is installed, you can start / enable it with the following commands:
+systemctl --user enable magnipy@video0.service  # Start service automatically after login
+systemctl --user start magnipy@video0.service   # Start service now
+
+## Use the following commands to stop / disable it:
+systemctl --user stop magnipy@video0.service    # Stop service now
+systemctl --user disable magnipy@video0.service # Do not start service automatically at login
+
+## In order to address device video0 by its unique id as explained before you can start/enable the service with
+systemctl --user start magnipy@usb-Chicony_Electronics_Co._Ltd._HD_WebCam-video-index0.service
 ```
 ## Configuration
 Certain aspects of the application are configurable.

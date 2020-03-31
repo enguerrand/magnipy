@@ -1,3 +1,4 @@
+import os
 from threading import Thread
 
 import cv2
@@ -23,7 +24,18 @@ DELTA = 40
 
 video_device = "/dev/video0"
 if len(sys.argv) > 1:
-    video_device = "/dev/" + sys.argv[1]
+    device_arg = sys.argv[1]
+    kernel_name = "/dev/" + device_arg
+    device_id_symlink = "/dev/v4l/by-id/" + device_arg
+    if os.path.exists(kernel_name):
+        video_device = kernel_name
+    elif os.path.exists(device_id_symlink):
+        video_device = device_id_symlink
+    else:
+        print("Did not find matching video device for parameter "+device_arg)
+        sys.exit(-1)
+
+print("Will attempt to capture video from device " + video_device)
 
 cap = cv2.VideoCapture(video_device)
 

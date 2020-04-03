@@ -23,7 +23,7 @@ Follow these steps to install magnipy:
 ```bash
 ## If not already present install python3 python3-dev, python3-venv, gcc and linux headers
 ## E.g. in Debian-based systems install it with:
-# sudo apt install python3 python3-dev python3-venv gcc, linux-headers-$(uname -r)
+# sudo apt install python3 python3-dev python3-venv gcc linux-headers-$(uname -r)
 ## 
 ## Navigate to a directory of your choice where you have write permissions. E.g:
 mkdir -p ~/git

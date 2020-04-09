@@ -47,8 +47,11 @@ class PanZoomState():
         self.ensure_full_overlap()
 
     def pan(self, delta_x=0, delta_y=0):
-        self.pos_x = self.pos_x + delta_x
-        self.pos_y = self.pos_y + delta_y
+        self.pan_to(self.pos_x + delta_x, self.pos_y + delta_y)
+
+    def pan_to(self, x: int, y: int):
+        self.pos_x = x
+        self.pos_y = y
         self.ensure_full_overlap()
 
     def pan_relative(self, delta_x=0.0, delta_y=0.0):

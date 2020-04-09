@@ -2,5 +2,6 @@
     "camera_focus_step": 5,
     "camera_fps": 30,
     "camera_res_width": 1920,
-    "camera_res_height": 1080
+    "camera_res_height": 1080,
+    "smooth_scroll_step_count": 10
 }

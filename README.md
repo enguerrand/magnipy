@@ -89,8 +89,12 @@ Certain aspects of the application are configurable.
 In order to change the defaults, copy the file config.json from this git repository to $HOME/.magnipy/ (create the
 directory if needed or let magnipy create it by running it at least once.)
 
-Then change the content as needed. The parameter names in the json file are reasonably self explanatory. You may have
-to check your camera to identify appropriate values.
+Then change the content as needed. Most of he parameter names in the json file are reasonably self explanatory. You may have
+to check your camera to identify appropriate values.  
+
+One parameter that does deserve explanation is the parameter *smooth_scroll_step_count*: This value determines how smoothly
+the image is panned as a result of pressing a cursor key. Higher values lead to smoother (and slower) scrolling.
+Set the value to 1 to deactivate smooth scrolling completely.
 
 After running magnipy at least once, a file named runtime.json will also be created in $HOME/magnipy.
 

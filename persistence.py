@@ -8,11 +8,14 @@ RUNTIME_SETTINGS_FILE = os.path.join(CONFIG_DIR, "runtime.json")
 
 
 class Config:
-    def __init__(self, camera_focus_step=1, camera_fps=10, camera_res_width=3264, camera_res_height=2448):
+    def __init__(
+            self, camera_focus_step=1, camera_fps=10, camera_res_width=3264, camera_res_height=2448, smooth_scroll_step_count=10
+    ):
         self.camera_focus_step = camera_focus_step
         self.camera_fps = camera_fps
         self.camera_res_width = camera_res_width
         self.camera_res_height = camera_res_height
+        self.smooth_scroll_step_count = smooth_scroll_step_count
 
 
 class RuntimeSettings:
@@ -45,7 +48,8 @@ def load_config() -> Config:
             data["camera_focus_step"],
             data["camera_fps"],
             data["camera_res_width"],
-            data["camera_res_height"]
+            data["camera_res_height"],
+            data["smooth_scroll_step_count"]
         )
     except Exception as e:
         return Config()

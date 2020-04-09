@@ -6,6 +6,7 @@ import sys
 import persistence
 from screeninfo import get_monitors
 
+from smooth_transition_state import SmoothTransitionState
 from touch_input_handler import TouchInputHandler
 from pan_zoom_state import PanZoomState
 
@@ -20,7 +21,7 @@ KEY_CODE_ARROW_LEFT = 65361
 KEY_CODE_ARROW_UP = 65362
 KEY_CODE_ARROW_RIGHT = 65363
 KEY_CODE_ARROW_DOWN = 65364
-DELTA = 40
+DELTA = 100
 
 video_device = "/dev/video0"
 if len(sys.argv) > 1:
@@ -69,6 +70,15 @@ try:
 
     touch_input_handler = TouchInputHandler(pan_zoom_state)
     Thread(target=touch_input_handler.listen, args=()).start()
+
+    smooth_scroll_step_count = config.smooth_scroll_step_count
+    smooth_transition_state = SmoothTransitionState(
+        pan_zoom_state.pos_x,
+        pan_zoom_state.pos_x,
+        pan_zoom_state.pos_y,
+        pan_zoom_state.pos_y,
+        smooth_scroll_step_count
+    )
 
     while True:
         ret, frame = cap.read()
@@ -129,15 +139,27 @@ try:
             cap.set(cv2.CAP_PROP_FOCUS, runtime_settings.absolute_focus)
             persistence.save_runtime_settings(runtime_settings)
         elif key == KEY_CODE_ARROW_UP:
-            pan_zoom_state.pan(0, -DELTA)
+            smooth_transition_state = SmoothTransitionState(
+                pan_zoom_state.pos_x, pan_zoom_state.pos_x, pan_zoom_state.pos_y, pan_zoom_state.pos_y - DELTA, smooth_scroll_step_count
+            )
         elif key == KEY_CODE_ARROW_RIGHT:
-            pan_zoom_state.pan(DELTA, 0)
+            smooth_transition_state = SmoothTransitionState(
+                pan_zoom_state.pos_x, pan_zoom_state.pos_x + DELTA, pan_zoom_state.pos_y, pan_zoom_state.pos_y, smooth_scroll_step_count
+            )
         elif key == KEY_CODE_ARROW_DOWN:
-            pan_zoom_state.pan(0, DELTA)
+            smooth_transition_state = SmoothTransitionState(
+                pan_zoom_state.pos_x, pan_zoom_state.pos_x, pan_zoom_state.pos_y, pan_zoom_state.pos_y + DELTA, smooth_scroll_step_count
+            )
         elif key == KEY_CODE_ARROW_LEFT:
-            pan_zoom_state.pan(-DELTA, 0)
+            smooth_transition_state = SmoothTransitionState(
+                pan_zoom_state.pos_x, pan_zoom_state.pos_x - DELTA, pan_zoom_state.pos_y, pan_zoom_state.pos_y, smooth_scroll_step_count
+            )
         elif key != -1:
             print(key)
+
+        if not smooth_transition_state.is_done():
+            x_smooth, y_smooth = smooth_transition_state.next_step()
+            pan_zoom_state.pan_to(x_smooth, y_smooth)
 finally:
     cap.release()
     cv2.destroyAllWindows()

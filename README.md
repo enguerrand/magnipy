@@ -110,3 +110,6 @@ startup to restore the previous settings. You can safely delete it if you want t
 - Autofocus: f
 - Reduce focus: q (implicitly disables autofocus)
 - Increase focus: w (implicitly disables autofocus)
+
+## License
+magnipy is free software licensed unter the GPLv3.

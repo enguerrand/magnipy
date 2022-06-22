@@ -1,6 +1,14 @@
 # magnipy
 A digital magnification glass written in Python
 
+## Maintenance Note
+The use case for this tool has gone for me personally. I do merge pull requests for security issues but I do not have time to test functionality afterwards.
+If you want to go to the last state that I tested and found working you can do:
+```bash
+git checkout last-tested-state
+```
+Note however that this state contains known security-critical bugs.
+
 ## Motivation
 This tool aims at helping visually impaired people to read. It is intended to be used in conjunction with a usb camera attached to a computer.
 
